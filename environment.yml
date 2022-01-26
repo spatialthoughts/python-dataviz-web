@@ -1,0 +1,17 @@
+name: python_dataviz
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - geopandas
+  - jupyterlab
+  - matplotlib
+  - rasterio
+  - xarray
+  - contextily
+  - cartopy
+
+
+prefix: /Users/ujaval/opt/anaconda3/envs/python_dataviz
+
