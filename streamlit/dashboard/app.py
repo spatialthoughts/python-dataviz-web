@@ -41,7 +41,8 @@ district = st.sidebar.selectbox('Select a District', districts)
 district_lengths = lengths_df[lengths_df['DISTRICT'] == district]
 
 fig, ax = plt.subplots(1, 1)
-district_lengths.plot(kind='bar', ax=ax, color=['blue', 'red', 'gray'], ylabel='Kilometers', xlabel='Category')
+district_lengths.plot(kind='bar', ax=ax, color=['blue', 'red'],
+    ylabel='Kilometers', xlabel='Category')
 ax.get_xaxis().set_ticklabels([])
 stats = st.sidebar.pyplot(fig)
 
