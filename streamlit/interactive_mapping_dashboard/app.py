@@ -68,6 +68,7 @@ district_lengths = lengths_df[lengths_df['DISTRICT'] == st.session_state.selecte
 fig, ax = plt.subplots(1, 1)
 district_lengths.plot(kind='bar', ax=ax, color=['blue', 'red', 'gray'], ylabel='Kilometers', xlabel='Category')
 ax.get_xaxis().set_ticklabels([])
+ax.set_ylim(0, 2500)
 stats = st.sidebar.pyplot(fig)
 
 if map_data['last_object_clicked']:
