@@ -1,5 +1,5 @@
 google-api-python-client
 streamlit
 leafmap
-rasterio
+rioxarray
 google-cloud-storage
