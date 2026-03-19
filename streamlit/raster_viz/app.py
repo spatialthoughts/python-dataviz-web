@@ -4,11 +4,13 @@ import xarray as xr
 import leafmap.foliumap as leafmap
 import numpy as np 
 import os
+os.environ['LOCALTILESERVER_CLIENT_PREFIX'] = 'proxy/{port}'
 
 st.write('This is a simple Streamlit app to visualize raster data using Leafmap and Rioxarray.')
 
 # Get the directory where app.py lives
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 ds = rxr.open_rasterio(os.path.join(BASE_DIR, 'bangalore_lulc_cog.tif'), masked=True)
 
 
