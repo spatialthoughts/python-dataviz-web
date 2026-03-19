@@ -1,7 +1,6 @@
 streamlit
 streamlit-folium
 folium
-leafmap
 rioxarray
 matplotlib
 pyproj
