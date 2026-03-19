@@ -9,7 +9,6 @@ import folium
 from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import matplotlib.cm as cm
 
 st.write('This is a simple Streamlit app to visualize raster data using Leafmap and Rioxarray.')
 
