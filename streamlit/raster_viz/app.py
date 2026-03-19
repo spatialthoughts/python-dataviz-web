@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ds = rxr.open_rasterio(os.path.join(BASE_DIR, 'bangalore_lulc_cog.tif'), masked=True)
 
-# This function convers the data to a pre-rendered PNG image encoded as a base64 string, 
+# This function convers the data to a pre-rendered PNG image encoded as a base64 string,
 # which can be used directly in a folium ImageOverlay.
 # This greatly speeds up rendering since we don't have to do per-pixel styling in folium
 def raster_to_image_overlay(data, colormap_name, vmin=None, vmax=None, nodata=None):
@@ -60,39 +60,42 @@ def get_bounds(data):
         right, top = transformer.transform(right, top)
     return [[bottom, left], [top, right]]
 
-# Use session state to store the map so we don't have to recreate it on every rerun.
-#  This is important because creating the map and rendering the raster can be expensive operations.
-if 'map' not in st.session_state:
-    bounds = get_bounds(ds)
-    center = [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2]
 
-    m = folium.Map(location=center, zoom_start=12)
+# Cache only the expensive LULC encoding — this never changes
+if 'lulc_url' not in st.session_state:
+    st.session_state['lulc_url'] = raster_to_image_overlay(ds, 'plasma', vmin=10, vmax=110, nodata=np.nan)
+    st.session_state['bounds'] = get_bounds(ds)
+    st.session_state['arr'] = ds.squeeze().values.astype(float)
 
-    # Set the vmin and vmax based on the values in the dataset, excluding nodata values
-    lulc_url = raster_to_image_overlay(ds, 'plasma', vmin=10, vmax=110, nodata=np.nan)
-    print(lulc_url[:100])  # print the first 100 characters of the data URL for debugging
-    folium.raster_layers.ImageOverlay(
-        image=lulc_url,
-        bounds=bounds,
-        opacity=1,
-        name='LULC',
-        interactive=True,
-    ).add_to(m)
+selected_value = st.slider('LULC Value', min_value=10, max_value=100, step=10, value=50)
 
-    # Layer 2: Built-up (values == 50)
-    processed = xr.where(ds == 50, 1, 0)
-    processed.rio.write_crs(ds.rio.crs, inplace=True)
-    built_url = raster_to_image_overlay(processed, 'Reds', vmin=0, vmax=1, nodata=0)
-    folium.raster_layers.ImageOverlay(
-        image=built_url,
-        bounds=bounds,
-        opacity=0.7,
-        name='Built',
-        interactive=True,
-        show=True
-    ).add_to(m)
+bounds = st.session_state['bounds']
+center = [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2]
 
-    folium.LayerControl().add_to(m)
-    st.session_state['map'] = m
+m = folium.Map(location=center, zoom_start=12)
 
-st_folium(st.session_state['map'], height=600, use_container_width=True, returned_objects=[])
+folium.raster_layers.ImageOverlay(
+    image=st.session_state['lulc_url'],
+    bounds=bounds,
+    opacity=1,
+    name='LULC',
+    interactive=True,
+).add_to(m)
+
+# Built layer recomputed from slider value (fast — LULC encoding already cached)
+arr = st.session_state['arr']
+processed = xr.where(ds == selected_value, 1, 0)
+processed.rio.write_crs(ds.rio.crs, inplace=True)
+built_url = raster_to_image_overlay(processed, 'Reds', vmin=0, vmax=1, nodata=0)
+folium.raster_layers.ImageOverlay(
+    image=built_url,
+    bounds=bounds,
+    opacity=0.7,
+    name='Selected Class',
+    interactive=True,
+    show=True
+).add_to(m)
+
+folium.LayerControl().add_to(m)
+
+st_folium(m, height=600, use_container_width=True, returned_objects=[])
