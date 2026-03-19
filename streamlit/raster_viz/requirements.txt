@@ -3,3 +3,4 @@ leafmap
 rioxarray
 localtileserver
 psutil
+jupyter-server-proxy
