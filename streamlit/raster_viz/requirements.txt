@@ -2,3 +2,4 @@ streamlit
 leafmap
 rioxarray
 localtileserver
+psutil
