@@ -1,6 +1,7 @@
 streamlit
+streamlit-folium
+folium
 leafmap
 rioxarray
-localtileserver
-psutil
-jupyter-server-proxy
+matplotlib
+pyproj
